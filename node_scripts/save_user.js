@@ -15,6 +15,10 @@ function toDate(dateStr) {
     const full_date = new Date(parts[2], parts[1] - 1, parts[0]).toString()
     console.log(full_date)
     console.log(date)
+    if (new Date().getTime() <! date) {
+        console.warn("The date is not valid")
+        process.exit(23)
+    }
     return date
 }
 

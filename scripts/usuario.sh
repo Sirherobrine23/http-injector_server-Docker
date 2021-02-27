@@ -1,19 +1,18 @@
 #!/bin/bash
-
 IP=$(wget -qO- 'https://api.ipify.org/?format=json' | jq '.ip'|sed 's|"||g')
 cor1='\033[41;1;37m'
 cor2='\033[44;1;37m'
 scor='\033[0m'
 
-# Usuarios
-username="${1}"
-password="${2}"
-dias="${4}"
-sshlimiter="${5}"
+username="$1"
+password="$2"
+dias="$3"
+sshlimiter="$4"
 
-
-echo -ne "Nome do usuário: ${username}";
+echo "configurações do usuario"
+echo ""
 # Username
+echo -ne "Nome do usuário: $username"
 [[ -z $username ]] && {
 	echo -e "\n${cor1}Nome de usuário vazio ou invalido!${scor}\n"
 	exit 1
@@ -40,8 +39,9 @@ sizemax=$(echo ${#username})
 	exit 1
 }
 
-# Passworld
-echo -ne "Senha: ******************";
+echo ""
+# passworld
+echo -ne "Senha: *****************"
 [[ -z $password ]] && {
 	echo -e "\n${cor1}Senha vazia ou invalida!${scor}\n"
 	exit 1
@@ -52,10 +52,9 @@ sizepass=$(echo ${#password})
 	exit 1
 }
 
-# Dias para espirar a conta
-echo -ne "Dias para expirar: ${dias}";
-[[ ${4} == "" ]] && {echo "Not reported days to sneeze";exit 1}
-
+echo ""
+# Days
+echo -ne "Dias para expirar: $dias"
 [[ -z $dias ]] && {
 	echo -e "\n${cor1}Numero de dias vazio!${scor}\n"
 	exit 1
@@ -69,9 +68,9 @@ echo -ne "Dias para expirar: ${dias}";
 	exit 1
 }
 
-# Limite de conexão
-echo -ne "Limite de conexões: ${sshlimiter}";
-[[ ${5} == "" ]] && {echo "No number of connections allowed";exit 1}
+echo ""
+# connections
+echo -ne "Limite de conexões: $sshlimiter"
 [[ -z $sshlimiter ]] && {
 	echo -e "\n${cor1}Você deixou o limite de conexões vazio!${scor}\n"
 	exit 1
@@ -91,11 +90,8 @@ useradd -e $final -M -s /bin/false -p $pass $username >/dev/null 2>&1 &
 echo "$password" >/etc/SSHPlus/senha/$username
 echo "$username $sshlimiter" >>/root/usuarios.db
 
-echo -e "CONTA SSH CRIADA !"
-echo -e "IP: $IP"
-echo -e "Usuário: $username"
-echo -e "Senha: $password"
-echo -e "Expira em: $gui"
+echo -e "IP:                 $IP"
+echo -e "Usuário:            $username"
+echo -e "Senha:              *****************"
+echo -e "Expira em:          $gui"
 echo -e "Limite de conexões: $sshlimiter"
-
-exit 0
