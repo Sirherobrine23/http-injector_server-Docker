@@ -35,7 +35,7 @@ fun_udp1 () {
                 echo -e "ps x | grep 'udpvpn' | grep -v 'grep' || screen -L -Logfile /tmp/badvpn_log.txt -dmS udpvpn /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000" >> /etc/autostart
             } || {
                 sed -i '/udpvpn/d' /etc/autostart
-                echo -e "ps x | grep 'udpvpn' | grep -v 'grep' || screen -dmS udpvpn /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000" >> /etc/autostart
+                echo -e "ps x | grep 'udpvpn' | grep -v 'grep' || screen -L -Logfile /tmp/badvpn_log.txt -dmS udpvpn /bin/badvpn-udpgw --listen-addr 127.0.0.1:7300 --max-clients 10000 --max-connections-for-client 10 --client-socket-sndbuf 10000" >> /etc/autostart
             }
             sleep 1
         }

@@ -1,8 +1,6 @@
-name: Http Injector Server in  Docker
+name: Http Injector Server in Docker
 on:
   push:
-    paths:
-      - "base/*"
   schedule:
     - cron: 0 0 * * */1
 jobs:
@@ -29,7 +27,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          context: .
           tags: |
             sirherobrine23/http-injector_server:latest
             sirherobrine23/http-injector_server:${{ github.run_id }}
