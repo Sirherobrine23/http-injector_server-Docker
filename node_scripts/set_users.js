@@ -1,26 +1,18 @@
 // Requires
-const exec = require("child_process").exec
-const execSync = require("child_process").execSync
+const {exec, execSync} = require("child_process")
 const {writeFileSync, readFileSync, existsSync} = require("fs")
-const join = require("path").join
+const {join} = require("path")
 
 // functions
-function encode (data){
-    return new Buffer.from(data).toString("base64")
-}
+function encode (data){return new Buffer.from(data).toString("base64")}
 
-function decode (data){
-    return new Buffer.from(data, 'base64').toString('ascii');
-}
+function decode (data){return new Buffer.from(data, 'base64').toString('ascii')}
 function toDate(dateStr) {const parts = dateStr.split("/");return new Date(`${parts[2]}/${parts[1] - 1}/${parts[0]}`).getTime()}
-
 function restdate(d){
     const date1 = d.split("/")
     // date1[1] // Month
     // date1[0] // day
     // date1[2] // year
-    // const time = ((new Date(newDate).getTime()) - (new Date().getTime())) / (1000 * 3600 * 24)
-
     const current_day = new Date().getDate()
     const current_month = new Date().getMonth()
     const current_year = new Date().getFullYear()
@@ -36,7 +28,20 @@ function restdate(d){
 const users = join("/", "home", "configs", "users.json")
 var config;
 if (existsSync(users)) config = JSON.parse(readFileSync(users, "utf8"))
-else config = [{"user":"userteste","pass":"dXN1YXJpbzEyMzQ=","data":"24/12/2050","ssh":"10"}]
+else config = [
+    {
+        "user": "userteste",
+        "pass": "dXN1YXJpbzEyMzQ=",
+        "data": "24/12/2050",
+        "ssh": "10"
+    },
+    {
+        "user": "testeuser",
+        "pass": "dXN1YXJpbzEyMzQ=",
+        "data": "24/12/2050",
+        "ssh": "10"
+    }
+]
 
 const current_date = new Date().getTime()
 for (let index in config) {

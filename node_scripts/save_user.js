@@ -3,9 +3,7 @@ const path = require("path")
 const date_save = process.env.date
 const username = process.env.user
 
-function encode (data){
-    return new Buffer.from(data).toString("base64")
-}
+function encode (data){return new Buffer.from(data).toString("base64")}
 const passworld = encode(process.env.pass)
 const ssh_limit = process.env.ssh_limit
 
