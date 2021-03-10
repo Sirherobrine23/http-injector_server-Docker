@@ -1,11 +1,14 @@
-name: Http Injector Server in Docker
+name: Nightly Image Publish
 on:
   push:
+    branches:
+      - main
   schedule:
     - cron: 0 0 * * */1
 jobs:
   base:
     runs-on: ubuntu-latest
+    if: github.actor == 'Sirherobrine23'
     steps:
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v1
