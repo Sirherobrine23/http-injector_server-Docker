@@ -1,9 +1,14 @@
+FROM ubuntu:latest AS badvpn
+RUN apt update && apt install -y cmake make build-essential git
+RUN git clone https://github.com/ambrop72/badvpn.git /tmp/badvpn
+RUN mkdir /tmp/build /tmp/output && cd /tmp/build/ && cmake /tmp/badvpn -DCMAKE_INSTALL_PREFIX=/tmp/output && make install
+
 FROM ubuntu:latest
 USER root
 ENV DEBIAN_FRONTEND=noninteractive ADMIN_USERNAME="ubuntu" ADMIN_PASSWORD="123456789"
 EXPOSE 22/tcp 80/tcp 8080/tcp 443/tcp 53/tcp 554/tcp 1935/tcp 7070/tcp 8000/tcp 8001/tcp 6971-6999/tcp
 RUN apt update
-RUN apt install -y squid dropbear openssh-server wget curl git unzip zip zsh sudo net-tools jq screen && echo "" && echo "" && \
+RUN apt install -y squid dropbear openssh-server wget curl git unzip zip zsh sudo net-tools jq screen bc nano lsof netstat dos2unix nload figlet python3 python-pip && echo "" && echo "" && \
 rm -fv /etc/ssh/sshd_config /etc/default/dropbear /etc/squid/squid.conf && echo "" && echo "" && \
 wget "https://github.com/AAAAAEXQOSyIpN2JZ0ehUQ/SSHPLUS-MANAGER-FREE/blob/master/Install/Sistema/Script/badvpn-udpgw?raw=true" -O /bin/badvpn-udpgw && \
 curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && apt install -y nodejs
