@@ -42,7 +42,9 @@ if (verify(username)){
         "user": username,
         "pass": passworld,
         "data": new_token,
-        "ssh": ssh_limit
+        "ssh": ssh_limit,
+        "wireguard": false,
+        "openvpn": false
     });
     fs.writeFileSync(users, JSON.stringify(tokens), "utf8");
 
@@ -50,3 +52,10 @@ if (verify(username)){
 } else {
     console.log("User exist")
 }
+function IsNotModule(){
+    const isnot = "This is not a module"
+    console.log(isnot)
+    return isnot
+}
+module.exports = IsNotModule
+export default IsNotModule

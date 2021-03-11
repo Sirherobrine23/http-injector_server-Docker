@@ -11,13 +11,6 @@ fun_bar () {
     ) > /dev/null 2>&1 &
     while true; do
         for ((i=0; i<18; i++)); do
-            echo -ne "Aguarde    \r"
-            sleep 0.5s
-            echo -ne "Aguarde .  \r"
-            sleep 0.5s
-            echo -ne "Aguarde .. \r"
-            sleep 0.5s
-            echo -ne "Aguarde ...\r"
             sleep 0.5s
         done
         [[ -e $HOME/fim ]] && rm $HOME/fim && break

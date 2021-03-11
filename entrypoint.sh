@@ -36,8 +36,18 @@ pipeline_prefetch off" > /etc/squid/squid.conf
     service ssh start
     service squid start
     
-} &> /tmp/service_status && cat /tmp/service_status && rm -f /tmp/service_status
-sleep 10s
+} &> /tmp/service_status
+cat /tmp/service_status |grep -v 'BCP 177 violation. Detected non-functional IPv6 loopback.'|grep -v "0.0.0.0/0' needs to be replaced by the term 'all'."|grep -v \
+"SECURITY NOTICE: Overriding config setting. Using 'all' instead."|grep -v "WARNING: (B) '::/0' is a subnetwork of (A) '::/0'"|grep -v "(B) '::/0' is a subnetwork of (A) '::/0'"|\
+grep -v "WARNING: (B) '::/0' is a subnetwork of (A) '::/0'"|grep -v "WARNING: because of this '::/0' is ignored to keep splay tree searching predictable"|\
+grep -v "WARNING: You should probably remove '::/0' from the ACL named 'all'"|grep .
+rm -f /tmp/service_status
+(cd /setup
+for Install in *;do
+    chmod a+x "${Install}";
+    ./${Install};
+    echo "./${Install}";
+done )
 # All service status
 {
     service --status-all &> /tmp/all_status.txt
@@ -57,7 +67,9 @@ sleep 10s
     cat /tmp/all_status.txt | grep 'squid'
     # -------------
 } && rm -f /tmp/all_status.txt
-# Usernames
+node /node_scripts/set_users.js || exit 23
+# wireguard_start.sh
+badvpn.sh
 {
     username="${ADMIN_USERNAME}"
     password="${ADMIN_PASSWORD}"
@@ -67,13 +79,11 @@ sleep 10s
     usermod --shell /bin/bash ${username}
     echo "${ADMIN_USERNAME}   ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
 } &> /tmp/config_user
-
+# Usernames
 internal_ips="$(echo $(ifconfig|grep 'inet'|awk '{print $2}')|tr "\n" " ")"
 echo "To connect in Docker Image user ssh with ip: ${internal_ips} ${IP_}
 User: ${ADMIN_USERNAME},
 Pass: ${ADMIN_PASSWORD}"
-node /node_scripts/set_users.js || exit 23
-badvpn.sh
 while true
 do
     sshmonitor.sh > /tmp/ssh_monitor
