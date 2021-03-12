@@ -16,8 +16,8 @@ ENV DEBIAN_FRONTEND=noninteractive ADMIN_USERNAME="ubuntu" ADMIN_PASSWORD="12345
 
 RUN \
 apt update && \
-apt install -y linux-headers-$(uname -r) && \
-add-apt-repository ppa:wireguard/wireguard && \
+apt install -y software-properties-common linux-headers-* && \
+add-apt-repository -y ppa:wireguard/wireguard && \
 apt install -y squid dropbear openssh-server wget curl git unzip zip zsh wireguard wireguard-tools \
 wireguard-dkms iptables qrencode procps openresolv inotify-tools sudo net-tools jq screen bc \
 build-essential dkms gnupg ifupdown iputils-ping libc6 libelf-dev perl pkg-config nano lsof dos2unix \
@@ -26,8 +26,7 @@ rm -fv /etc/ssh/sshd_config /etc/default/dropbear /etc/squid/squid.conf && \
 curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && apt install -y nodejs
 # Wireguard
 
-RUN mkdir /app
-RUN cd /app && git clone https://git.zx2c4.com/wireguard-linux-compat && git clone https://git.zx2c4.com/wireguard-tools && cd wireguard-tools && git checkout "${WIREGUARD_RELEASE}" && make -C src -j$(nproc) && make -C src install && echo "**** install CoreDNS ****" && COREDNS_VERSION=$(curl -sX GET "https://api.github.com/repos/coredns/coredns/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | awk '{print substr($1,2); }') && curl -o /tmp/coredns.tar.gz -L "https://github.com/coredns/coredns/releases/download/v${COREDNS_VERSION}/coredns_${COREDNS_VERSION}_linux_amd64.tgz" && tar xf /tmp/coredns.tar.gz -C /app && echo "**** clean up ****" && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
+# RUN mkdir /app && cd /app && git clone https://git.zx2c4.com/wireguard-linux-compat && git clone https://git.zx2c4.com/wireguard-tools && cd wireguard-tools && git checkout "${WIREGUARD_RELEASE}" && make -C src -j$(nproc) && make -C src install && echo "**** install CoreDNS ****" && COREDNS_VERSION=$(curl -sX GET "https://api.github.com/repos/coredns/coredns/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | awk '{print substr($1,2); }') && curl -o /tmp/coredns.tar.gz -L "https://github.com/coredns/coredns/releases/download/v${COREDNS_VERSION}/coredns_${COREDNS_VERSION}_linux_amd64.tgz" && tar xf /tmp/coredns.tar.gz -C /app && echo "**** clean up ****" && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
 # # Wireguard
 # Setup Scripts
