@@ -58,6 +58,4 @@ RUN echo "PATH=\"${PATH}:/scripts\"" > /etc/profile;echo "PATH=\"${PATH}:/script
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod a+x /sbin/entrypoint.sh
 # VOLUME [ "/sys/fs/cgroup" ]
-# CMD [ "/usr/bin/systemd" ]
-# ENTRYPOINT [ "/sbin/entrypoint.sh" ]
-ENTRYPOINT [ "systemd", "/sbin/entrypoint.sh" ]
+ENTRYPOINT [ "/sbin/entrypoint.sh" ]
