@@ -16,7 +16,7 @@ ENV DEBIAN_FRONTEND=noninteractive ADMIN_USERNAME="ubuntu" ADMIN_PASSWORD="12345
 
 RUN \
 apt update && \
-apt install -y software-properties-common linux-headers-* && \
+apt install -y software-properties-common linux-headers-*generic* && \
 add-apt-repository -y ppa:wireguard/wireguard && \
 apt install -y squid dropbear openssh-server wget curl git unzip zip zsh wireguard wireguard-tools \
 wireguard-dkms iptables qrencode procps openresolv inotify-tools sudo net-tools jq screen bc \
