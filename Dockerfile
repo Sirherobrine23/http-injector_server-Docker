@@ -13,14 +13,21 @@ COPY --from=badvpn /tmp/output/bin/badvpn-udpgw /bin/badvpn-udpgw
 COPY --from=badvpn /tmp/output/bin/badvpn-tun2socks /bin/badvpn-tun2socks
 EXPOSE 22/tcp 80/tcp 8080/tcp 443/tcp 53/tcp 554/tcp 1935/tcp 7070/tcp 8000/tcp 8001/tcp 6971-6999/tcp
 ENV DEBIAN_FRONTEND=noninteractive ADMIN_USERNAME="ubuntu" ADMIN_PASSWORD="123456789"
-RUN apt update && apt install -y squid dropbear openssh-server wget curl git unzip zip zsh wireguard wireguard-tools \
-wireguard-dkms iptables qrencode procps openresolv inotify-tools sudo net-tools jq screen bc nano lsof dos2unix nload figlet python3 python3-pip speedtest-cli iproute2 && \
+
+RUN \
+apt update && \
+apt install -y linux-headers-$(uname -r) && \
+add-apt-repository ppa:wireguard/wireguard && \
+apt install -y squid dropbear openssh-server wget curl git unzip zip zsh wireguard wireguard-tools \
+wireguard-dkms iptables qrencode procps openresolv inotify-tools sudo net-tools jq screen bc \
+build-essential dkms gnupg ifupdown iputils-ping libc6 libelf-dev perl pkg-config nano lsof dos2unix \
+nload figlet python3 python3-pip speedtest-cli iproute2 && \
 rm -fv /etc/ssh/sshd_config /etc/default/dropbear /etc/squid/squid.conf && \
-RUN curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && apt install -y nodejs
+curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && apt install -y nodejs
 # Wireguard
 
 RUN mkdir /app
-RUN apt-get install -y --no-install-recommends bc build-essential dkms gnupg ifupdown iputils-ping libc6 libelf-dev perl pkg-config && echo "**** install wireguard-tools ****" && if [ -z ${WIREGUARD_RELEASE+x} ];then WIREGUARD_RELEASE=$(curl -sX GET "https://api.github.com/repos/WireGuard/wireguard-tools/tags" | jq -r '.[0].name'); fi && cd /app && git clone https://git.zx2c4.com/wireguard-linux-compat && git clone https://git.zx2c4.com/wireguard-tools && cd wireguard-tools && git checkout "${WIREGUARD_RELEASE}" && make -C src -j$(nproc) && make -C src install && echo "**** install CoreDNS ****" && COREDNS_VERSION=$(curl -sX GET "https://api.github.com/repos/coredns/coredns/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | awk '{print substr($1,2); }') && curl -o /tmp/coredns.tar.gz -L "https://github.com/coredns/coredns/releases/download/v${COREDNS_VERSION}/coredns_${COREDNS_VERSION}_linux_amd64.tgz" && tar xf /tmp/coredns.tar.gz -C /app && echo "**** clean up ****" && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
+RUN cd /app && git clone https://git.zx2c4.com/wireguard-linux-compat && git clone https://git.zx2c4.com/wireguard-tools && cd wireguard-tools && git checkout "${WIREGUARD_RELEASE}" && make -C src -j$(nproc) && make -C src install && echo "**** install CoreDNS ****" && COREDNS_VERSION=$(curl -sX GET "https://api.github.com/repos/coredns/coredns/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | awk '{print substr($1,2); }') && curl -o /tmp/coredns.tar.gz -L "https://github.com/coredns/coredns/releases/download/v${COREDNS_VERSION}/coredns_${COREDNS_VERSION}_linux_amd64.tgz" && tar xf /tmp/coredns.tar.gz -C /app && echo "**** clean up ****" && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
 # # Wireguard
 # Setup Scripts
