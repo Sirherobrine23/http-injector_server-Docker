@@ -16,8 +16,8 @@ ENV DEBIAN_FRONTEND=noninteractive ADMIN_USERNAME="ubuntu" ADMIN_PASSWORD="12345
 
 RUN \
 apt update && \
-apt install -y software-properties-common linux-headers-*generic* && \
-add-apt-repository -y ppa:wireguard/wireguard && \
+apt install -y software-properties-common && \
+echo resolvconf resolvconf/linkify-resolvconf boolean false | debconf-set-selections && \
 apt install -y squid dropbear openssh-server wget curl git unzip zip zsh wireguard wireguard-tools \
 wireguard-dkms iptables qrencode procps openresolv inotify-tools sudo net-tools jq screen bc \
 build-essential dkms gnupg ifupdown iputils-ping libc6 libelf-dev perl pkg-config nano lsof dos2unix \

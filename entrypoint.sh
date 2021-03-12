@@ -1,5 +1,8 @@
 #!/bin/bash
-if ! echo ${PATH} |grep -q ':/scripts';then exit 1;fi
+mkdir /home/{config,ssl}
+apt install -y linux-headers-$(uname -r)
+ln -s /etc/wireguard/ /home/config/wireguard
+/setup/wireguard_setup.sh
 EXTERNAL_IP=$(wget -qO- 'https://api.ipify.org/?format=json' | jq '.ip'|sed 's|"||g')
 EXTERNAL_IP2=$(wget -qO- 'https://ipecho.net/plain')
 [ "${EXTERNAL_IP2}" == "${EXTERNAL_IP}" ] && IP_="${EXTERNAL_IP}"||IP_="${EXTERNAL_IP2}"
@@ -76,7 +79,7 @@ badvpn.sh
     pass=$(perl -e 'print crypt($ARGV[0], "password")' $password);
     useradd -m -p "$pass" "$username";
     addgroup ${username} sudo;
-    usermod --shell /bin/bash ${username}
+    usermod --shell /bin/bash --home /home/config/${username} ${username}
     echo "${ADMIN_USERNAME}   ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
 } &> /tmp/config_user
 # Usernames

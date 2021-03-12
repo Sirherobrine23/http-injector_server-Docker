@@ -1,5 +1,5 @@
 #!/bin/bash
-
+source /etc/wireguard/params
 ENDPOINT="${SERVER_PUB_IP}:${SERVER_PORT}"
 echo ""
 echo "Tell me a name for the client."
