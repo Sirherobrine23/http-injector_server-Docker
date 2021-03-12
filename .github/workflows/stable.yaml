@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - stable
-  schedule:
-    - cron: 0 0 * * */2
 jobs:
   base:
     runs-on: ubuntu-latest
@@ -32,7 +30,6 @@ jobs:
           push: true
           tags: |
             sirherobrine23/http-injector_server:latest
-            sirherobrine23/http-injector_server:${{ github.sha }}
           platforms: "linux/amd64","linux/arm64","linux/386","linux/arm/v7","linux/arm/v6"
 
       - name: Image digest
