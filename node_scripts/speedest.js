@@ -4,10 +4,9 @@ const speedTest = require('speedtest-net');
         const Speed = await speedTest({acceptLicense: true,acceptGdpr: true});
         const Download = Math.trunc(Speed.download.bandwidth / 1000 / 100),
             Upload = Math.trunc(Speed.upload.bandwidth / 1000 / 100);
-        const doS = `Download: ${Download} Mbps, Upload: ${Upload} Mbps`
-        const Uplaod_log =  (Upload) => {console.log("Mais de "+Upload+" usuarios podem se conectar ao servidor")};
-        if (Upload > 10) Uplaod_log(10)
-        console.log(doS);
+        if (Download < 1000 && Upload < 1000) console.log(`Download: ${Download / 1000} Gbps, Upload: ${Upload / 1000} Gbps`);
+        else console.log(`Download: ${Download} Mbps, Upload: ${Upload} Mbps`);
+        
     }
     /* catch (err) {
         console.log(err.message);

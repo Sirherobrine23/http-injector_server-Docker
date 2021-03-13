@@ -8,7 +8,10 @@ make install
 
 FROM ubuntu:latest
 USER root
-# badVPN
+
+COPY LICENSES/ /docker_run_licenses/
+
+# badVPN copy
 COPY --from=badvpn /tmp/output/bin/badvpn-udpgw /bin/badvpn-udpgw
 COPY --from=badvpn /tmp/output/bin/badvpn-tun2socks /bin/badvpn-tun2socks
 EXPOSE 22/tcp 80/tcp 8080/tcp 443/tcp 53/tcp 554/tcp 1935/tcp 7070/tcp 8000/tcp 8001/tcp 6971-6999/tcp
@@ -24,22 +27,14 @@ build-essential dkms gnupg ifupdown iputils-ping libc6 libelf-dev perl pkg-confi
 nload figlet python3 python3-pip speedtest-cli iproute2 && \
 rm -fv /etc/ssh/sshd_config /etc/default/dropbear /etc/squid/squid.conf && \
 curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && apt install -y nodejs
-# Wireguard
-
-# RUN mkdir /app && cd /app && git clone https://git.zx2c4.com/wireguard-linux-compat && git clone https://git.zx2c4.com/wireguard-tools && cd wireguard-tools && git checkout "${WIREGUARD_RELEASE}" && make -C src -j$(nproc) && make -C src install && echo "**** install CoreDNS ****" && COREDNS_VERSION=$(curl -sX GET "https://api.github.com/repos/coredns/coredns/releases/latest" | awk '/tag_name/{print $4;exit}' FS='[""]' | awk '{print substr($1,2); }') && curl -o /tmp/coredns.tar.gz -L "https://github.com/coredns/coredns/releases/download/v${COREDNS_VERSION}/coredns_${COREDNS_VERSION}_linux_amd64.tgz" && tar xf /tmp/coredns.tar.gz -C /app && echo "**** clean up ****" && rm -rf /tmp/* /var/lib/apt/lists/* /var/tmp/*
 
 # # Wireguard
 # Setup Scripts
 COPY SetupScripts/ /setup/
 RUN chmod a+x -R /setup
-COPY raw_bin/sysctl /usr/sbin/sysctl
 # SSH Config
 COPY config/ /etc/
 COPY texts/banner.html /etc/bannerssh
-
-# SSh Plus Scripts
-# COPY plus_install.sh /tmp/plus.sh
-# RUN bash /tmp/plus.sh
 
 # Configs Folder
 RUN mkdir -p /home/configs/ && chmod 7777 -R /home/configs
@@ -51,8 +46,8 @@ ENV container=docker
 # Scripts
 COPY scripts/ /scripts/
 RUN chmod 7777 -R /scripts
-ENV PATH="$PATH:/scripts"
-RUN echo "PATH=\"${PATH}:/scripts\"" > /etc/profile;echo "PATH=\"${PATH}:/scripts\"" > /etc/environment
+ENV PATH="PATH:/scripts"
+RUN echo "PATH=\"${PATH}\"" > /etc/profile;echo "PATH=\"${PATH}\"" > /etc/environment;echo ${PATH}
 
 COPY entrypoint.sh /sbin/entrypoint.sh
 RUN chmod a+x /sbin/entrypoint.sh

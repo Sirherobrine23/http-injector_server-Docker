@@ -1,6 +1,10 @@
 #!/bin/bash
 mkdir /home/{config,ssl}
-apt install -y linux-headers-$(uname -r)
+case $(uname -r) in
+    *boot2docker*) echo "We docked the Docker ToolBox, we recommend that you use the Docker Desktop, if you can't continue, some things may not work";Kernel_Install="generic";;
+    *) Kernel_Install="$(uname -r)";;
+esac
+apt install -y "linux-headers-${Kernel_Install}"
 ln -s /etc/wireguard/ /home/config/wireguard
 /setup/wireguard_setup.sh
 EXTERNAL_IP=$(wget -qO- 'https://api.ipify.org/?format=json' | jq '.ip'|sed 's|"||g')

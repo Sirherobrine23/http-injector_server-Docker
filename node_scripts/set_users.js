@@ -54,7 +54,6 @@ for (let index in config) {
     const check_date = toDate(element.data)
     if (current_date >! check_date) {
         var save_user = exec(`bash /scripts/usuario.sh "${user}" "${pass}" "${data}" "${ssh}"`)
-        // var save_user = execSync(`echo "${user}" "${pass}" "${data}" "${ssh}"`).toString()
         save_user.stdout.on("data", function(data){
             console.log(data)
         })
