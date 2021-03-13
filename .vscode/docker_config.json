@@ -1,0 +1,46 @@
+{
+    "name": "http_injector",
+    "docker_image": "sirherobrine23/http-injector_server:ext-nightly",
+    "dockerfile": "Dockerfile",
+    "ports": [
+        {
+            "port": 22,
+            "external": 2247,
+            "protocoll": "tcp"
+        },
+        {
+            "port": 443,
+            "external": 4430,
+            "protocoll": "tcp"
+        },
+        {
+            "port": 51820,
+            "external": 50000,
+            "protocoll": "udp"
+        },
+        {
+            "port": 80,
+            "external": 8788,
+            "protocoll": "tcp"
+        }
+    ],
+    "mounts": [
+        {
+            "path": "/home/config",
+            "from": "./docker/config"
+        }
+    ],
+    "env": [
+        {
+            "name": "ADMIN_PASSWORD",
+            "value": "12345678"
+        },
+        {
+            "name": "ADMIN_USERNAME",
+            "value": "teste"
+        }
+    ],
+    "options": [
+        "--privileged"
+    ]
+}
