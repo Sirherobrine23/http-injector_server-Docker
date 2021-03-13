@@ -50,7 +50,7 @@ for (let index in config) {
     const pass = decode(element.pass)
     const ssh = element.ssh
     const data = restdate(element.data)
-    const wireguard = element.wireguard
+    // const wireguard = element.wireguard
     const check_date = toDate(element.data)
     if (current_date >! check_date) {
         var save_user = exec(`bash /scripts/usuario.sh "${user}" "${pass}" "${data}" "${ssh}"`)
@@ -60,9 +60,9 @@ for (let index in config) {
         save_user.on("exit", function(code){
             if (code !== 0) process.exit(code)
         })
-        const status_wireguard = exec(`/scripts/wiregurd_add.sh "${user}"`)
-        status_wireguard.stdout.on("data", (data) => {console.log(data)})
-        status_wireguard.on("exit", (code) => {if (code !== 0) {process.exit(code)}})
+        // const status_wireguard = exec(`/scripts/wiregurd_add.sh "${user}"`)
+        // status_wireguard.stdout.on("data", (data) => {console.log(data)})
+        // status_wireguard.on("exit", (code) => {if (code !== 0) {process.exit(code)}})
     } else console.warn("Date not valid skipping")
     index++
 }

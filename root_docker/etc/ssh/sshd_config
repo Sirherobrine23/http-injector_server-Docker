@@ -8,4 +8,4 @@ Subsystem sftp  /usr/lib/openssh/sftp-server
 ClientAliveInterval 120
 PasswordAuthentication yes
 PermitTunnel yes
-Banner /etc/bannerssh
+Banner /etc/ssh/banner.html

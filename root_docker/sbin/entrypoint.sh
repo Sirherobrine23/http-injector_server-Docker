@@ -1,12 +1,19 @@
 #!/bin/bash
 mkdir /home/{config}
 case $(uname -r) in
-    *boot2docker*) echo "We docked the Docker ToolBox, we recommend that you use the Docker Desktop, if you can't continue, some things may not work";Kernel_Install="generic";;
-    *) Kernel_Install="$(uname -r)";;
+    *boot2docker*)
+        echo "We docked the Docker ToolBox, we recommend that you use the Docker Desktop, if you can't continue, some things may not work";
+        Kernel_Install="linux-headers-generic";;
+    *azure*)
+        echo "Imagem esta rodando na cloud da Microsoft (Azure), ";
+        Kernel_Install="linux-headers-azure";;
+    *)
+        echo "Generic kernel";
+        Kernel_Install="linux-headers-$(uname -r)";;
 esac
-apt install -y "linux-headers-${Kernel_Install}"
-ln -s /etc/wireguard/ /home/config/wireguard
-/setup/wireguard_setup.sh
+apt install -y "${Kernel_Install}" &> /log/gnu_linux-install.log
+# ln -s /etc/wireguard/ /home/config/wireguard
+# /setup/wireguard_setup.sh
 EXTERNAL_IP=$(wget -qO- 'https://api.ipify.org/?format=json' | jq '.ip'|sed 's|"||g')
 EXTERNAL_IP2=$(wget -qO- 'https://ipecho.net/plain')
 [ "${EXTERNAL_IP2}" == "${EXTERNAL_IP}" ] && IP_="${EXTERNAL_IP}"||IP_="${EXTERNAL_IP2}"
@@ -49,12 +56,12 @@ cat /tmp/service_status |grep -v 'BCP 177 violation. Detected non-functional IPv
 grep -v "WARNING: (B) '::/0' is a subnetwork of (A) '::/0'"|grep -v "WARNING: because of this '::/0' is ignored to keep splay tree searching predictable"|\
 grep -v "WARNING: You should probably remove '::/0' from the ACL named 'all'"|grep .
 rm -f /tmp/service_status
-(cd /setup
-for Install in *;do
-    chmod a+x "${Install}";
-    ./${Install};
-    echo "./${Install}";
-done )
+# (cd /setup
+# for Install in *;do
+#     chmod a+x "${Install}";
+#     ./${Install};
+#     echo "./${Install}";
+# done )
 # All service status
 {
     service --status-all &> /tmp/all_status.txt

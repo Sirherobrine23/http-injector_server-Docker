@@ -36,15 +36,26 @@ function verify (user){
     }
     return true
 }
-
+function sshuttle_port (){
+    const json_config_path = path.join(process.env.HOME, "user.json");
+    const json_config = JSON.parse(fs.readFileSync(json_config_path, "utf8"))
+    const port = Math.trunc(Math.random() * 1000)
+    for (let teste in json_config){
+        const port_config = json_config[teste].sshuttle.port
+        if (port === port_config) return sshuttle_port()
+    }
+    if (port < 50) return port
+    else return sshuttle_port()
+}
 if (verify(username)){
     tokens.push({
         "user": username,
         "pass": passworld,
         "data": new_token,
         "ssh": ssh_limit,
-        "wireguard": false,
-        "openvpn": false
+        "sshuttle": {
+            "port": sshuttle_port()
+        }
     });
     fs.writeFileSync(users, JSON.stringify(tokens), "utf8");
 
