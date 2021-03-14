@@ -45,5 +45,5 @@ RUN chmod 7777 -R /scripts
 EXPOSE 22/tcp 80/tcp 8080/tcp 443/tcp 51820/udp
 ENV ADMIN_USERNAME="ubuntu" ADMIN_PASSWORD="123456789"
 # Entrypoint
-RUN chmod a+x /sbin/entrypoint.sh
-ENTRYPOINT [ "/sbin/entrypoint.sh" ]
+RUN chmod a+x /entrypoint.sh
+ENTRYPOINT [ "/entrypoint.sh" ]
