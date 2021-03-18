@@ -1,6 +1,6 @@
 #!/bin/bash
 source /etc/PATH
-
+echo "Hello I'm passing by here you add your star in our repository on Github so that the created image remains updated the container, repository: https://github.com/Sirherobrine23/http-injector_server-Docker"
 echo "Performing the base configurations, please wait ..."
 bash /base/configs.sh &> /tmp/Config.log
 echo "Sucess, log file path: /tmp/Config.log"
