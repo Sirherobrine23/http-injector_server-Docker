@@ -7,5 +7,5 @@
     echo "${username}   ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
 } &> /tmp/config_user
 
-cd /node_scripts/
+cd /nodejs/
 node set_users.js

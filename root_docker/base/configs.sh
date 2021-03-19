@@ -27,6 +27,14 @@ pipeline_prefetch off" > /etc/squid/squid.conf
     service dropbear start 
     service ssh start
     service squid start
+    service pptpd start
     
 } &> /tmp/service_status
 /scripts/badvpn.sh
+netstat -alpn |grep 'pptp'
+echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf
+sysctl -p
+iptables -t nat -A POSTROUTING -o eth0 -j MASQUERADE && iptables-save
+iptables --table nat --append POSTROUTING --out-interface ppp0 -j MASQUERADE
+iptables -I INPUT -s 10.0.0.0/8 -i ppp0 -j ACCEPT
+iptables --append FORWARD --in-interface eth0 -j ACCEPT

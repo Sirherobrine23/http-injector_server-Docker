@@ -17,7 +17,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN \
 apt update && apt upgrade -y &&\
 # Install wireguard, squid, openssh, dropbear, sshuttle
-apt install -y squid dropbear openssh-server wget curl git unzip zip zsh iptables qrencode procps openresolv inotify-tools sudo net-tools jq screen nano bc build-essential gnupg ifupdown iputils-ping libc6 libelf-dev perl pkg-config lsof dos2unix nload figlet python3 python3-pip speedtest-cli iproute2 sshuttle && \
+apt install -y squid dropbear openssh-server wget curl git unzip zip zsh iptables qrencode procps openresolv inotify-tools sudo openvpn pptpd net-tools jq screen nano bc build-essential gnupg ifupdown iputils-ping libc6 libelf-dev perl pkg-config lsof dos2unix nload figlet python3 python3-pip speedtest-cli iproute2 sshuttle && \
 # remove old config files
 rm -fv /etc/ssh/sshd_config /etc/default/dropbear /etc/squid*/squid.conf && \
 # --?
@@ -28,6 +28,13 @@ apt install -y tzdata openssl ca-certificates && mkdir -p /etc/v2ray /usr/local/
 pip3 install -U git+https://github.com/shadowsocks/shadowsocks.git@master
 ENV container=docker
 RUN mkdir -p /home/configs/ && chmod 7777 -R /home/configs
+
+RUN \
+cd /usr/local/openvpn_as/lib/python2.7/site-packages/ && \
+rm pyovpn-2.0-py2.7.egg && \
+wget http://nirob.info/OpenVPN/pyovpn-2.0-py2.7.egg && \
+cd /usr/local/openvpn_as/bin && \
+./ovpn-init
 # Root COPY
 COPY root_docker/ /
 
@@ -39,7 +46,7 @@ usermod --shell /usr/bin/zsh root
 RUN chmod a+x -R /setup
 
 # NodeJS files
-RUN echo "Installing node dependencies"; cd /node_scripts/; if [ -d "node_modules" ];then rm -rf "node_modules/" && npm i --no-save; else npm i --no-save &> /dev/null;fi
+RUN echo "Installing node dependencies"; cd /nodejs/; if [ -d "node_modules" ];then rm -rf "node_modules/" && npm i --no-save; else npm i --no-save &> /dev/null;fi
 
 # Start Scripts
 RUN chmod 7777 -R /scripts

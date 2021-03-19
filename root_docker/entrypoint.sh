@@ -35,8 +35,7 @@ internal_ips="$(echo $(ifconfig|grep 'inet'|awk '{print $2}')|tr "\n" ",")"
 echo "To connect in Docker Image user ssh with ip: ${internal_ips}, $(wget -qO- 'https://ipecho.net/plain')
 User: ${ADMIN_USERNAME},
 Pass: ${ADMIN_PASSWORD}"
-cd /node_scripts/
-node speedtest.js
+(cd /nodejs ;node speedtest.js)&
 while true
 do
     /scripts/sshmonitor.sh > /tmp/ssh_monitor
