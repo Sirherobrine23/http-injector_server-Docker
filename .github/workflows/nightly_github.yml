@@ -25,5 +25,5 @@ jobs:
         with:
           push: true
           tags: |
-            sirherobrine23/http-injector_server-docker/server:nightly
+            sirherobrine23/http-injector_server:nightly
           platforms: linux/amd64,linux/arm64
