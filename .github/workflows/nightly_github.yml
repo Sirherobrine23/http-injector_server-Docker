@@ -1,4 +1,4 @@
-name: Nightly Image Publish
+name: Nightly Image Publish (Github packages)
 on:
   push:
     branches:
@@ -25,5 +25,5 @@ jobs:
         with:
           push: true
           tags: |
-            sirherobrine23/http-injector_server-Docker/server:nightly
+            sirherobrine23/http-injector_server-docker/server:nightly
           platforms: linux/amd64,linux/arm64
