@@ -25,5 +25,5 @@ jobs:
         with:
           push: true
           tags: |
-            sirherobrine23/http-injector_server:nightly
+            ghcr.io/sirherobrine23/http-injector_server:nightly
           platforms: linux/amd64,linux/arm64
