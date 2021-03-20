@@ -29,12 +29,6 @@ pip3 install -U git+https://github.com/shadowsocks/shadowsocks.git@master
 ENV container=docker
 RUN mkdir -p /home/configs/ && chmod 7777 -R /home/configs
 
-RUN \
-cd /usr/local/openvpn_as/lib/python2.7/site-packages/ && \
-rm pyovpn-2.0-py2.7.egg && \
-wget http://nirob.info/OpenVPN/pyovpn-2.0-py2.7.egg && \
-cd /usr/local/openvpn_as/bin && \
-./ovpn-init
 # Root COPY
 COPY root_docker/ /
 
