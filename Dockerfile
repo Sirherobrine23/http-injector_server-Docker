@@ -36,9 +36,6 @@ RUN echo "PATH=${PATH}:/scripts" >> /etc/PATH && \
 echo "export PATH=${PATH}:/scripts" >> /etc/zsh/zshenv && \
 usermod --shell /usr/bin/zsh root
 
-# Setup files
-RUN chmod a+x -R /setup
-
 # NodeJS files
 RUN echo "Installing node dependencies"; cd /nodejs/; if [ -d "node_modules" ];then rm -rf "node_modules/" && npm i --no-save; else npm i --no-save &> /dev/null;fi
 
