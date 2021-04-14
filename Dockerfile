@@ -42,9 +42,7 @@ RUN echo "Installing node dependencies"; cd /nodejs/; if [ -d "node_modules" ];t
 # Start Scripts
 RUN chmod 7777 -R /scripts
 
-RUN cd /tmp && curl https://raw.githubusercontent.com/v2fly/docker/master/v2ray.sh | bash -
-
-EXPOSE 22/tcp 80/tcp 8080/tcp 443/tcp 51820/udp
+EXPOSE 22/tcp 80/tcp 8080/tcp 443/tcp
 ENV ADMIN_USERNAME="ubuntu" ADMIN_PASSWORD="123456789"
 # Entrypoint
 RUN chmod a+x /entrypoint.sh
