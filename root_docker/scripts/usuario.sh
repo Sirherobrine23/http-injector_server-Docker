@@ -1,5 +1,5 @@
 #!/bin/bash
-IP=$(wget -qO- 'https://api.ipify.org/?format=json' | jq '.ip'|sed 's|"||g')
+IP=$(wget -qO- 'https://ipecho.net/plain')
 cor1='\033[41;1;37m'
 cor2='\033[44;1;37m'
 scor='\033[0m'

@@ -1,14 +1,49 @@
-console.warn("Starting image build");
-const path = require("path")
-const {exec, execSync} = require("child_process")
-const ports_options = "-p 2233:22/tcp -p 10086:10086/udp -p 1723:1723/tcp -p 1792:1792/tcp",
-    variasbles = `-e ADMIN_USERNAME="${process.env.USERNAME}" -e ADMIN_PASSWORD="${process.env.PASSWORLD}"`,
-    // docker_options = `--privileged`,
-    docker_name = {
-        name: "http_injector",
-        docker: "http_injector:latest"
-    };
-// console.log(execSync(`docker stop  $(docker ps -a |grep -v 'CONTAINER'|awk '{print $1}')`).toString());
-execSync(`konsole -e docker build . -t ${docker_name.docker}`)
+const { resolve } = require("path")
+const { execSync } = require("child_process");
+const { readFileSync } = require("fs");
+
+let DockerConfig = JSON.parse(readFileSync(resolve(__dirname, "docker_config.json"), "utf8"))
+
+var portsExport="";
+for (let ports of DockerConfig.ports){
+    portsExport += `-p ${(ports.external||ports.port)}:${ports.port}/${(ports.protocoll||"tcp")} `
+}
+
+var mountExport="";
+for (let mounts of DockerConfig.mounts){
+    mountExport += `-v ${resolve(mounts.from)}:${mounts.path} `
+}
+
+var envExport="";
+for (let envs of DockerConfig.env){
+    envExport += `-e ${envs.name}="${envs.value}" `
+}
+
+var optionsExport="";
+for (let options of DockerConfig.options){
+    optionsExport += `${options} `
+}
+
+console.log("Creating the Image");
+let build_command = `docker build . -f ${DockerConfig.dockerfile} -t ${DockerConfig.docker_image}`;
+console.log(build_command);
+execSync(`konsole -e "${build_command}"`);
+
+var CheckDocker = execSync("docker ps -a").toString()
+CheckDocker = CheckDocker.split(/\r?\n/g)
+for (let dockerId of CheckDocker){
+    if (dockerId.includes(DockerConfig.docker_image)){
+        dockerId = dockerId.split(" ");
+        console.log(dockerId);
+        console.log(execSync(`docker stop ${dockerId[0]}`));
+    } else if (dockerId.includes(DockerConfig.name)){
+        dockerId = dockerId.split(" ");
+        console.log(dockerId);
+        console.log(execSync(`docker stop ${dockerId[0]}`));
+    }
+}
+
 console.log(`Running the image`);
-execSync(`konsole --noclose -e "docker run -ti --rm --privileged --name ${docker_name.name} ${variasbles} ${ports_options} ${docker_name.docker}"`)
+let commadRun = `docker run -ti --rm ${optionsExport} --name ${DockerConfig.name} ${mountExport} ${portsExport} ${envExport} ${DockerConfig.docker_image}`;
+console.log(commadRun);
+execSync(`konsole --noclose -e '${commadRun}'`);

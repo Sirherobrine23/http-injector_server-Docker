@@ -13,20 +13,57 @@ function toDate(dateStr) {
     const full_date = new Date(parts[2], parts[1] - 1, parts[0]).toString()
     console.log(full_date)
     console.log(date)
-    if (new Date().getTime() <! date) {
-        console.warn("The date is not valid")
-        process.exit(23)
-    }
+    if (new Date().getTime() <! date) {console.warn("The date is not valid");process.exit(23)}
     return date
+}
+
+const BaseConfig = {
+    "openssh": {
+        "ports": [
+            22
+        ]
+    },
+    "dropebear": {
+        "ports": [
+            443
+        ]
+    },
+    "squid": {
+        "ports": [
+            80,
+            8080,
+            554,
+            1935,
+            7070,
+            8000,
+            8001
+        ]
+    },
+    "badvpn": {
+        "port": 7300
+    },
+    "users": [
+        {
+            "user": "userteste",
+            "pass": "dXN1YXJpbzEyMzQ=",
+            "data": "24/12/2050",
+            "ssh": "10"
+        },
+        {
+            "user": "testeuser",
+            "pass": "dXN1YXJpbzEyMzQ=",
+            "data": "24/12/2050",
+            "ssh": "10"
+        }
+    ]
 }
 
 const users = path.join((process.env.HOME||process.env.USERPROFILE), "user.json") 
 if (!(fs.existsSync(users))) fs.writeFileSync(users, "[]")
 
-const uuid = require("uuid").v4
 const new_token = toDate(date_save)
 
-var tokens = JSON.parse(fs.readFileSync(users, "utf8"));
+var ConfigFile = JSON.parse(fs.readFileSync(users, "utf8"));
 
 function verify (user){
     const json_config_path = path.join(process.env.HOME, "user.json") 
@@ -37,26 +74,15 @@ function verify (user){
     }
     return true
 }
-function sshuttle_port (){
-    const json_config_path = path.join(process.env.HOME, "user.json");
-    const json_config = JSON.parse(fs.readFileSync(json_config_path, "utf8"))
-    const port = Math.trunc(Math.random() * 1000)
-    for (let teste in json_config){
-        const port_config = json_config[teste].sshuttle.port
-        if (port === port_config) return sshuttle_port()
-    }
-    if (port < 50) return port
-    else return sshuttle_port()
-}
+
 if (verify(username)){
-    tokens.push({
+    ConfigFile.push({
         "user": username,
         "pass": passworld,
         "data": new_token,
-        "ssh": ssh_limit,
-        "pptp": true
+        "ssh": ssh_limit
     });
-    fs.writeFileSync(users, JSON.stringify(tokens), "utf8");
+    fs.writeFileSync(users, JSON.stringify(ConfigFile), "utf8");
 
     console.log(new_token);
 } else {

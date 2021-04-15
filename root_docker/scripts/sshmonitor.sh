@@ -20,22 +20,19 @@ do
         PID=$pid
         user=`echo $login |awk -F" " '{print $10}' | sed -r "s/'/ /g"`
         waktu=`echo $login |awk -F" " '{print $2"-"$1,$3}'`
-        while [ ${#waktu} -lt 13 ]; do
-            waktu=$waktu" "
-        done
-        while [ ${#user} -lt 16 ]; do
-            user=$user" "
-        done
-        while [ ${#PID} -lt 8 ]; do
-            PID=$PID" "
-        done
+        
+        while [ ${#waktu} -lt 13 ];do waktu=$waktu" ";done
+        
+        while [ ${#user} -lt 16 ];do user=$user" ";done
+        
+        while [ ${#PID} -lt 8 ];do PID=$PID" ";done
         echo "$user $PID $waktu"
     fi
 done
 }
 echo -e " Usuario         Status       Conexão     Tempo   Code: $(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 9 | head -n 1)"
 echo ""
- while read usline
+while read usline
     do  
         user="$(echo $usline | cut -d' ' -f1)"
         s2ssh="$(echo $usline | cut -d' ' -f2)"
@@ -45,26 +42,22 @@ echo ""
           sqd=00
         fi
         [[ "$sqd" = "" ]] && sqd=0
-        if [[ -e /etc/openvpn/openvpn-status.log ]]; then
-          ovp="$(cat /etc/openvpn/openvpn-status.log | grep -E ,"$user", | wc -l)"
-        else
-          ovp=0
+        if [[ -e /etc/openvpn/openvpn-status.log ]]; then ovp="$(cat /etc/openvpn/openvpn-status.log | grep -E ,"$user", | wc -l)"
+          else ovp=0
         fi
-        if netstat -nltp|grep 'dropbear'> /dev/null;then
-          drop="$(fun_drop | grep "$user" | wc -l)"
-        else
-          drop=0
+        if netstat -nltp|grep 'dropbear'> /dev/null;then drop="$(fun_drop | grep "$user" | wc -l)"
+          else drop=0
         fi
         cnx=$(($sqd + $drop))
         conex=$(($cnx + $ovp))
-        if [[ $cnx -gt 0 ]]; then
-          tst="$(ps -o etime $(ps -u $user |grep sshd |awk 'NR==1 {print $1}')|awk 'NR==2 {print $1}')"
+        
+        if [[ $cnx -gt 0 ]];then
+          tst="$(ps -o etime $(ps -u $user |grep sshd |awk 'NR==1 {print $1}')|awk 'NR==2 {print $1}')";
           tst1=$(echo "$tst" | wc -c)
-        if [[ "$tst1" == "9" ]]; then 
-          timerr="$(ps -o etime $(ps -u $user |grep sshd |awk 'NR==1 {print $1}')|awk 'NR==2 {print $1}')"
-        else
-          timerr="$(echo "00:$tst")"
-        fi
+
+          if [[ "$tst1" == "9" ]];then timerr="$(ps -o etime $(ps -u $user |grep sshd |awk 'NR==1 {print $1}')|awk 'NR==2 {print $1}')";
+            else timerr="$(echo "00:$tst")"
+          fi
         elif [[ $ovp -gt 0 ]]; then
           tmp2=$(printf '%(%H:%M:%S)T\n')
           tmp1="$(grep -w "$user" /etc/openvpn/openvpn-status.log |awk '{print $4}'| head -1)"
@@ -87,6 +80,7 @@ echo ""
         else
           timerr="00:00:00"
         fi
+
         if [[ $conex -eq 0 ]]; then
             status=$(echo -e "Offline        ")
             printf '%-17s%-14s%-10s%s\n' " $user"      "$status" "$conex/$s2ssh" "$timerr" 
@@ -94,7 +88,6 @@ echo ""
             status=$(echo -e "Online         ")
             printf '%-17s%-14s%-10s%s\n' " $user"      "$status" "$conex/$s2ssh" "$timerr"
         fi
-        echo -e "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     done < "$database"
 
 #exit

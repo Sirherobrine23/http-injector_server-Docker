@@ -1,6 +1,6 @@
 {
-    "name": "docker_runTeste",
-    "docker_image": "teste/docker:run",
+    "name": "HttpInjector",
+    "docker_image": "sirherobrine23/httpinjector:test",
     "dockerfile": "Dockerfile",
     "ports": [
         {
@@ -9,8 +9,14 @@
             "protocoll": "tcp"
         },
         {
-            "port": 2122,
-            "protocoll": "udp"
+            "port": 443,
+            "external": 2223,
+            "protocoll": "tcp"
+        },
+        {
+            "port": 80,
+            "external": 8885,
+            "protocoll": "tcp"
         }
     ],
     "mounts": [
@@ -21,8 +27,12 @@
     ],
     "env": [
         {
-            "name": "teste",
-            "value": "google is best"
+            "name": "ADMIN_USERNAME",
+            "value": "ubuntu"
+        },
+        {
+            "name": "ADMIN_PASSWORD",
+            "value": "123456789"
         }
     ],
     "options": [
