@@ -3,10 +3,16 @@ source /etc/PATH
 echo "Hello I'm passing by here you add your star in our repository on Github so that the created image remains updated the container, repository: https://github.com/Sirherobrine23/http-injector_server-Docker"
 
 echo "Performing the base configurations, please wait ..."
-bash /base/configs.sh
 
 echo "Configuring users, please wait ..."
-username="${ADMIN_USERNAME}" password="${ADMIN_PASSWORD}" bash /base/usuario.sh
+username="${ADMIN_USERNAME}" password="${ADMIN_PASSWORD}"
+{
+    pass=$(perl -e 'print crypt($ARGV[0], "password")' $password);
+    useradd -m -p "$pass" "$username";
+    addgroup ${username} sudo;
+    usermod --shell /usr/bin/zsh --home /tmp/${username} ${username}
+    echo "${username}   ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
+}
 
 (
     cd /nodejs/

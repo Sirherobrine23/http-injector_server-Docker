@@ -115,3 +115,21 @@ DROPBEAR_RECEIVE_WINDOW=65536
 DROPBEAR_BANNER="/etc/ssh/banner.html"`
 console.log(DropebearConfig);
 writeFileSync("/etc/default/dropbear", DropebearConfig)
+
+var OpenSSHPort="";
+for (let SquidPort of config.openssh.ports) OpenSSHPort += `Port ${SquidPort}\n`
+
+const SshConfig = `ChallengeResponseAuthentication no
+UsePAM yes
+X11Forwarding yes
+PrintMotd no
+AcceptEnv LANG LC_*
+Subsystem sftp  /usr/lib/openssh/sftp-server
+ClientAliveInterval 120
+PasswordAuthentication yes
+PermitTunnel yes
+Banner /etc/ssh/banner.html
+${OpenSSHPort}`
+
+console.log(SshConfig);
+writeFileSync("/etc/ssh/sshd_config", SshConfig)

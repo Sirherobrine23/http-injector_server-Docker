@@ -1,8 +1,0 @@
-# disabled because OpenSSH is installed
-# change to NO_START=0 to enable Dropbear
-NO_START=0
-DROPBEAR_PORT=443
-DROPBEAR_EXTRA_ARGS="-p 110"
-
-DROPBEAR_RECEIVE_WINDOW=65536
-DROPBEAR_BANNER="/etc/bannerssh"
