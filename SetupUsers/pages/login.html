@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login In </h1>
+    <script>
+        function checkUsername (){
+            fetch("/get_token", {
+                mode: "cors",
+                method: "POST",
+                headers: {
+                    user: document.getElementsByName("user")[0].value,
+                    pass: document.getElementsByName("pass")[0].value
+                }
+            }).then(function (response){
+                globalThis.response = response
+                if (!response.ok) throw Error(response.statusText);
+                return response;
+            }).then(res => res.text()).then(res => {
+                console.log(res);
+                sessionStorage.setItem("token", res)
+                location.replace("/")
+            }).catch(err => {
+                alert(err)
+            })
+        };
+    </script>
+    <div id="errorFrom" style="display: none; color: red;"></div>
+    <div class="LoginArea">
+        <div onkeypress="let code = (event.which || event.keyCode);if (code === 13) checkUsername()">
+            <span>Username: <input type="text" name="user" id="Username"></span>
+            <p><span>Passworld: <input type="password" name="pass" id="Passworld"></span></p>
+        </div>
+        <p><input type="submit" value="Login" onclick="checkUsername()"></p>
+    </div>
+</body>
+</html>
+<script>
+function query(name) {
+    var match = RegExp('[?&]' + name + '=([^&]*)').exec(window.location.search);
+    return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
+}
+if (query("error")) {
+    document.getElementById("errorFrom").innerHTML = query("error")
+    document.getElementById("errorFrom").style.display = "block"
+}
+</script>
