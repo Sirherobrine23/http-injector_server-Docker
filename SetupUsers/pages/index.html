@@ -1,12 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
+    <script src="/configJson.js"></script>
 <script>
-    let jsonConfig = {}/* Origin */;
+    if (typeof jsonConfig === "undefined"||jsonConfig === AudioNode) {
+      var jsonConfig = {}/* Origin */;
     if (jsonConfig.openssh === undefined) {jsonConfig.openssh = {};jsonConfig.openssh.ports = []}
     if (jsonConfig.dropebear === undefined) {jsonConfig.dropebear = {};jsonConfig.dropebear.ports = []}
     if (jsonConfig.squid === undefined) {jsonConfig.squid = {};jsonConfig.squid.ports = []}
     if (jsonConfig.badvpn === undefined) jsonConfig.badvpn = {};jsonConfig.badvpn.port = 7300
     if (jsonConfig.users === undefined) jsonConfig.users = []
+    }
     console.log(jsonConfig);
     const token = sessionStorage.getItem("token");
     if (token === null || token === undefined || token === "") location.replace(`/login/?error=token was not informed`)

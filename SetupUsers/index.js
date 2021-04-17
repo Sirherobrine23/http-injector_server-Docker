@@ -26,6 +26,9 @@ app.get("/", (req, res) => {
 app.get("/login", (req, res) => {
     res.sendFile(resolve(__dirname, "pages", "login.html"))
 });
+app.get("/configJson.js", (req, res) => {
+  res.send(`var jsonConfig = ${readFileSync(ConfigFile, "utf8")}`)
+});
 app.post("/get_token", (req, res) => {
     const body = req.headers
     if (body.user !== process.env.USERNAME) return res.status(400).json({
