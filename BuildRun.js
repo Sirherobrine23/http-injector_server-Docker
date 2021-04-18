@@ -1,8 +1,12 @@
 const { resolve } = require("path")
-const { execSync } = require("child_process");
-const { readFileSync } = require("fs");
+const { execSync, exec, spawnSync } = require("child_process");
+const { readFileSync, existsSync, writeFileSync } = require("fs");
+const { WriteStream } = require("fs");
+const { exit } = process;
 
-let DockerConfig = JSON.parse(readFileSync(resolve(__dirname, "docker_config.json"), "utf8"))
+var DockerConfig;
+let DockerConfigFile = resolve(__dirname, "docker_config.json");
+DockerConfig = JSON.parse(readFileSync(DockerConfigFile, "utf8"))
 
 var portsExport="";
 for (let ports of DockerConfig.ports){
@@ -24,26 +28,48 @@ for (let options of DockerConfig.options){
     optionsExport += `${options} `
 }
 
-console.log("Creating the Image");
-let build_command = `docker build . -f ${DockerConfig.dockerfile} -t ${DockerConfig.docker_image}`;
-console.log(build_command);
-execSync(`konsole -e "${build_command}"`);
-
+console.log("Checking and stopping");
 var CheckDocker = execSync("docker ps -a").toString()
 CheckDocker = CheckDocker.split(/\r?\n/g)
 for (let dockerId of CheckDocker){
-    if (dockerId.includes(DockerConfig.docker_image)){
-        dockerId = dockerId.split(" ");
-        console.log(dockerId);
-        console.log(execSync(`docker stop ${dockerId[0]}`));
-    } else if (dockerId.includes(DockerConfig.name)){
-        dockerId = dockerId.split(" ");
-        console.log(dockerId);
-        console.log(execSync(`docker stop ${dockerId[0]}`));
+    const arrayDocker = dockerId.trim().split(/\s+/)
+    console.log(arrayDocker);
+    if (dockerId.includes(DockerConfig.docker_image)||dockerId.includes(DockerConfig.name)) {
+        console.log(`Docker Container ID: ${arrayDocker[0]}`);
+        try {
+            let Status = execSync(`docker stop ${arrayDocker[0]}`).toString()
+            console.log(Status);
+        } catch (error) {
+            console.log(error);
+        }
     }
 }
 
-console.log(`Running the image`);
-let commadRun = `docker run -ti --rm ${optionsExport} --name ${DockerConfig.name} ${mountExport} ${portsExport} ${envExport} ${DockerConfig.docker_image}`;
-console.log(commadRun);
-execSync(`konsole --noclose -e '${commadRun}'`);
+var docker = execSync("docker image ls").toString().split(/\r?\n/g)
+for (let dockerImage of docker){
+    if (dockerImage.includes(DockerConfig.docker_image)) {
+        dockerImage = dockerImage.trim().split(/\s+/)
+        console.log(dockerImage);
+        console.log(spawnSync(`docker rmi ${dockerImage[2]}`));
+    }
+}
+
+console.log("Creating the Image");
+let build_command = `docker build ${resolve(__dirname)} -f ${DockerConfig.dockerfile} -t ${DockerConfig.docker_image}`;
+console.log(build_command);
+const build = exec(build_command);
+build.stdout.on("data", (data) => {if (data.slice(-1) === "") data = data.slice(0, -1);console.log(data);})
+build.stdout.pipe(WriteStream(resolve(__dirname, "build.log")))
+build.on("exit", function(code){
+    if (code === 0){
+        console.log(`Running the image`);
+        var name = ""
+        if (DockerConfig.name) name = `--name ${DockerConfig.name}`
+        let commadRun = `docker run --rm ${optionsExport} ${name} ${mountExport} ${portsExport} ${envExport} ${DockerConfig.docker_image}`.trim().split(/\s+/).join(" ");
+        console.log(commadRun);
+        const run = exec(commadRun);
+        run.on("exit", code => process.exit(code))
+        run.stdout.on("data", (data) => {if (data.slice(-1) === "") data = data.slice(0, -1);console.log(data);})
+        run.stdout.pipe(WriteStream(resolve(__dirname, "run.log")))
+    } else exit(1)
+})

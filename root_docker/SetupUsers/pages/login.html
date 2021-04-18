@@ -6,6 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
 </head>
+<style>
+body {
+    text-align: center;
+}
+.errorFrom {
+    display: block;
+    color: red;
+    margin-bottom: 3rem;
+}
+</style>
 <body>
     <h1>Login In </h1>
     <script>
@@ -30,7 +40,7 @@
             })
         };
     </script>
-    <div id="errorFrom" style="display: none; color: red;"></div>
+    <div id="errorFrom" class="errorFrom"></div>
     <div class="LoginArea">
         <div onkeypress="let code = (event.which || event.keyCode);if (code === 13) checkUsername()">
             <span>Username: <input type="text" name="user" id="Username"></span>
@@ -46,7 +56,7 @@ function query(name) {
     return match && decodeURIComponent(match[1].replace(/\+/g, ' '));
 }
 if (query("error")) {
-    document.getElementById("errorFrom").innerHTML = query("error")
+    document.getElementById("errorFrom").innerHTML = query("error").split("\\n").join("<br>")
     document.getElementById("errorFrom").style.display = "block"
 }
 </script>

@@ -5,37 +5,24 @@ echo "Hello I'm passing by here you add your star in our repository on Github so
 echo "Performing the base configurations, please wait ..."
 
 echo "Configuring users, please wait ..."
-username="${ADMIN_USERNAME}" password="${ADMIN_PASSWORD}"
-{
-    pass=$(perl -e 'print crypt($ARGV[0], "password")' $password);
-    useradd -m -p "$pass" "$username";
-    addgroup ${username} sudo;
-    usermod --shell /usr/bin/zsh --home /tmp/${username} ${username}
-    echo "${username}   ALL=(ALL:ALL) NOPASSWD: ALL" >> /etc/sudoers
-}
-
 (
     cd /nodejs/
-    node Setup.js
+    
 )
 
-# Start Services
-service dropbear start &> /dev/nul
-service ssh start &> /dev/nul
-service squid start &> /dev/nul
-sleep 30s
+(
+    cd /SetupUsers/
+    npm install
+    USERNAME="${ADMIN_USERNAME}" PASSWORLD="${ADMIN_PASSWORD}" node index.js
+) &
 
-service --status-all &> /tmp/status
-cat /tmp/status | grep 'dropbear'
-cat /tmp/status | grep 'ssh'
-cat /tmp/status | grep 'squid'
 
 echo ""
 internal_ips="$(echo $(ifconfig|grep 'inet'|awk '{print $2}'))"
 echo "To connect in Docker Image user ssh with ip: ${internal_ips} $(wget -qO- 'https://ipecho.net/plain')
 User: ${ADMIN_USERNAME},
 Pass: ${ADMIN_PASSWORD}"
-/scripts/badvpn.sh
+
 while true
 do
     /scripts/sshmonitor.sh > /tmp/ssh_monitor

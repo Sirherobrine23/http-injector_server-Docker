@@ -9,12 +9,6 @@ loginsukses='Password auth succeeded'
 pids=`ps ax |grep dropbear |grep  " $port_dropbear" |awk -F" " '{print $1}'`
 for pid in $pids
 do
-    # pidlogs=`grep $pid $log |grep "$loginsukses" |awk -F" " '{print $3}'`
-    # i=0
-    # for pidend in $pidlogs
-    # do
-    #   let i=i+1
-    # done
     if [ $pidend ];then
         login=`grep $pid $log |grep "$pidend" |grep "$loginsukses"`
         PID=$pid
@@ -30,8 +24,6 @@ do
     fi
 done
 }
-echo -e " Usuario         Status       Conexão     Tempo   Code: $(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 9 | head -n 1)"
-echo ""
 while read usline
     do  
         user="$(echo $usline | cut -d' ' -f1)"
@@ -89,5 +81,4 @@ while read usline
             printf '%-17s%-14s%-10s%s\n' " $user"      "$status" "$conex/$s2ssh" "$timerr"
         fi
     done < "$database"
-
-#exit
+exit

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<script>
+    jsonConfig = {
+        "openssh": {
+            "ports": []
+        },
+        "dropebear": {
+            "ports": []
+        },
+        "squid": {
+            "ports": []
+        },
+        "badvpn": {
+            "port": 7300
+        },
+        "users": []
+    }
+    console.log(jsonConfig);
+    const token = sessionStorage.getItem("token");
+    if (token === null || token === undefined || token === "") location.replace(`/login/?error=token was not informed`)
+    fetch("/check_token", {
+        mode: "cors",
+        method: "POST",
+        headers: {
+            token: token
+        }
+    }).then(function (response){
+        globalThis.response = response
+        if (!response.ok) location.replace("/login/?error=Token has expired or is wrong");
+        return response;
+    });
+</script>
+<script src="/configJson.js"></script>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title id="Title">Home</title>
+</head>
+<style>
+.conatainer_root {
+    text-align: center;
+    margin-top: 12vh;
+}
+</style>
+<body>
+    <div class="add_user conatainer_root">
+        <h2>Add User</h2>
+        <div onchange="PublishJson();" oninput="PublishJson();" onkeypress="PublishJson();">
+            <span>Username: <input type="text" name="user" id="user" autocomplete="off" min="2" max="10"></span>
+            <p><span>Passworld: <input type="password" name="pass" id="pass" minlength="2" maxlength="10"></span></p>
+            <p><span>Expiration date: <input type="date" name="data" id="data"></span> <span id="diasrestantes">0</span></p>
+            <p><span>Connections: <input type="number" name="connections" value="1" id="connections"></span></p>
+            <p><input type="button" value="Save User" id="saveUserButtom" onclick="SaveUserinJson()"></p>
+        </div>
+        <textarea disabled id="outputJson" style="margin: 0px; width: 60vh; height: 10rem; resize: none;">{}</textarea>
+    </div>
+
+    <!-- Remove User -->
+    <div class="add_user conatainer_root">
+        <h2>Remove User</h2>
+        <fieldset>
+            <span>Num, Username: Action</span>
+            <p><div id="removeUser"></div></p>
+        </fieldset>
+    </div>
+
+    <!-- Settings User -->
+    <div class="settings Server conatainer_root">
+        <h2>Server Settings</h2>
+        <div onchange="">
+            <div> OpenSSH:
+                <fieldset>
+                    <p><span>port: <input type="number" id="portOpenSSH"></span>
+                        <input type="button" onclick="opensshAdd()" id="addsshPort" value="Add"></p>
+                    <div id="opensshportarea"></div>
+                </fieldset>
+            </div>
+            <br>
+            <div> Dropbear:
+                <fieldset>
+                    <p><span>port: <input type="number" id="portdropbear"></span>
+                        <input type="button" onclick="dropbearAdd()" id="addDropPort" value="Add"></p>
+                    <div id="dropbearportarea"></div>
+                </fieldset>
+            </div>
+            <br>
+            <div> Squid:
+                <fieldset>
+                    <p><span>port: <input type="number" id="portsquid"></span>
+                        <input type="button" onclick="squidAdd()" id="addSquidPort" value="Add"></p>
+                    <div id="squidportarea"></div>
+                </fieldset>
+            </div>
+        </div>
+        <p><span>Send Config to Save</span></p>
+        <fieldset>
+            <textarea id="ConfigJson" cols="30" rows="10" disabled style="margin: 0px; width: 102vh; height: 10rem; resize: none;"></textarea>
+            <p><input type="button" value="Send Config" onclick="sendConfig();"></p>
+        </fieldset>
+    </div>
+</body>
+<script src="/Settings.js"></script>
+<script>setInterval(() => {document.getElementById("ConfigJson").innerHTML = JSON.stringify(jsonConfig, null, 4)}, 500);</script>
+</html>

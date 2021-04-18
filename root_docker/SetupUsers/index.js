@@ -5,6 +5,7 @@ const path = require("path");
 var cors = require("cors");
 const bodyParser = require("body-parser");
 const { resolve } = require("path");
+const { execSync } = require("child_process");
 const app = express();
 
 app.use(cors());
@@ -12,7 +13,10 @@ app.use(bodyParser.json()); /* https://github.com/github/fetch/issues/323#issuec
 app.use(bodyParser.urlencoded({ extended: true }));
 // ******************************************************
 const tokenFile = resolve(__dirname, "token.txt");
-const ConfigFile = resolve((process.env.USERPROFILE||process.env.HOME), "HttpInjectorConfig.json");
+var ConfigFile
+if (process.env.IS_DOCKER) ConfigFile = "/home/configs/settings.json";
+else ConfigFile = resolve(__dirname, "..", "..", "HttpInjectorConfig.json");
+console.log(ConfigFile);
 require("crypto").randomBytes(Math.random() + 1 * 1000, function(err, buffer) {
     if (err) console.warn(err);
     const new_token = buffer.toString("hex");
@@ -26,9 +30,32 @@ app.get("/", (req, res) => {
 app.get("/login", (req, res) => {
     res.sendFile(resolve(__dirname, "pages", "login.html"))
 });
+app.get("/favicon.ico", (req, res) => {res.send("null")});
 app.get("/configJson.js", (req, res) => {
-  res.send(`var jsonConfig = ${readFileSync(ConfigFile, "utf8")}`)
+    var config;
+    if (fs.existsSync(ConfigFile)) config = fs.readFileSync(ConfigFile, "utf8")
+    else config = {
+        "openssh": {
+            "ports": []
+        },
+        "dropebear": {
+            "ports": []
+        },
+        "squid": {
+            "ports": []
+        },
+        "badvpn": {
+            "port": 7300
+        },
+        "users": []
+    }
+    res.send(`var jsonConfigFromServer = ${config}`)
 });
+
+app.get("/Settings.js", (req, res) => {
+    res.sendFile(resolve(__dirname, "pages", "Settings.js"))
+});
+
 app.post("/get_token", (req, res) => {
     const body = req.headers
     if (body.user !== process.env.USERNAME) return res.status(400).json({
@@ -52,9 +79,13 @@ app.post("/save_config", (req, res) => {
     const localToken = fs.readFileSync(tokenFile, "utf8")
     if (localToken === body.token) {
         const parseConfig = JSON.stringify(JSON.parse(Buffer.from(body.injectorconfig, "base64").toString()), null, 4)
+        res.send("ok")
         fs.writeFileSync(ConfigFile, parseConfig)
+        console.log(execSync("service ssh restart"));
+        console.log(execSync("service dropbear restart"));
+        console.log(execSync("service squid restart"));
     }
-    else res.sendStatus(404)
+    else res.send("Token Error")
 });
 // -----------------------------
 const port = (process.env.port_api||1112)

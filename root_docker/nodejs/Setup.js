@@ -1,7 +1,6 @@
 // Requires
-const { exec, execSync } = require("child_process")
-const { readFileSync, existsSync, writeFileSync } = require("fs");
-const { join } = require("path")
+const { execSync } = require("child_process")
+const { writeFileSync, readFileSync } = require("fs");
 
 // functions
 
@@ -24,47 +23,7 @@ function restdate(d){
     return diffDays
 }
 // Script
-var config = {
-    "openssh": {
-        "ports": [
-            22
-        ]
-    },
-    "dropebear": {
-        "ports": [
-            443,
-            110
-        ]
-    },
-    "squid": {
-        "ports": [
-            80,
-            8080,
-            554,
-            1935,
-            7070,
-            8000,
-            8001
-        ]
-    },
-    "badvpn": {
-        "port": 7300
-    },
-    "users": [
-        {
-            "user": "userteste",
-            "pass": "dXN1YXJpbzEyMzQ=",
-            "data": "24/12/2050",
-            "ssh": "10"
-        },
-        {
-            "user": "testeuser",
-            "pass": "dXN1YXJpbzEyMzQ=",
-            "data": "24/12/2050",
-            "ssh": "10"
-        }
-    ]
-}
+var config = JSON.parse(readFileSync("/home/configs/settings.json"))
 
 const current_date = new Date().getTime()
 for (let userConfig of config.users) {
@@ -74,8 +33,10 @@ for (let userConfig of config.users) {
     const data = restdate(userConfig.data)
     const check_date = toDate(userConfig.data)
     if (current_date >! check_date) {
-        execSync(`bash /scripts/usuario.sh "${user}" "${pass}" "${data}" "${ssh}"`)
-    } else console.warn("Date not valid skipping")
+        let result = execSync(`bash /scripts/usuario.sh "${user}" "${pass}" "${data}" "${ssh}"`).toString()
+        console.log(result);
+    }
+    else console.warn("Date not valid skipping")
 }
 
 var SquidPortExport="";
@@ -98,13 +59,15 @@ via off
 forwarded_for off
 pipeline_prefetch off`
 
-console.log(SquidConfig);
+// console.log(SquidConfig);
 writeFileSync("/etc/squid/squid.conf", SquidConfig)
 
-var DropbearExportDefault,DropbearExport="";
+var DropbearExportDefault,
+    DropbearExport="";
 for (let DropbearPort of config.dropebear.ports) {
-    if (DropbearExportDefault === undefined) DropbearExportDefault = DropbearPort
-    else DropbearExport += `-p ${DropbearPort} `}
+    if (DropbearExportDefault === undefined) DropbearExportDefault = DropbearPort;
+    else DropbearExport += `-p ${DropbearPort} `;
+}
 const DropebearConfig = `# disabled because OpenSSH is installed
 # change to NO_START=0 to enable Dropbear
 NO_START=0
@@ -113,7 +76,8 @@ DROPBEAR_EXTRA_ARGS="${DropbearExport}"
 
 DROPBEAR_RECEIVE_WINDOW=65536
 DROPBEAR_BANNER="/etc/ssh/banner.html"`
-console.log(DropebearConfig);
+
+// console.log(DropebearConfig);
 writeFileSync("/etc/default/dropbear", DropebearConfig)
 
 var OpenSSHPort="";
@@ -131,5 +95,5 @@ PermitTunnel yes
 Banner /etc/ssh/banner.html
 ${OpenSSHPort}`
 
-console.log(SshConfig);
+// console.log(SshConfig);
 writeFileSync("/etc/ssh/sshd_config", SshConfig)

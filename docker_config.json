@@ -14,6 +14,14 @@
             "protocoll": "tcp"
         },
         {
+            "port": 1112,
+            "protocoll": "tcp"
+        },
+        {
+            "port": 1132,
+            "protocoll": "tcp"
+        },
+        {
             "port": 80,
             "external": 8885,
             "protocoll": "tcp"
@@ -21,8 +29,8 @@
     ],
     "mounts": [
         {
-            "path": "/home/http",
-            "from": "./docker/http"
+            "path": "/home/configs/settings.json",
+            "from": "./HttpInjectorConfig.json"
         }
     ],
     "env": [
