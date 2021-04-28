@@ -1,6 +1,6 @@
 #!/bin/bash
 
-database="/root/usuarios.db"
+database="/usuarios.db"
 tmp_now=$(printf '%(%H%M%S)T\n')
 fun_drop () {
 port_dropbear=`ps aux | grep dropbear | awk NR==1 | awk '{print $17;}'`

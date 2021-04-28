@@ -74,15 +74,14 @@ sizepass=$(echo ${#password})
 final=$(date "+%Y-%m-%d" -d "+$dias days")
 gui=$(date "+%d/%m/%Y" -d "+$dias days")
 pass=$(perl -e 'print crypt($ARGV[0], "password")' $password)
-mkdir /tmp/senha
+# mkdir /tmp/senha
 
-if (useradd -e $final -M -s /bin/false -p $pass $username)
-then
-	echo "$password" > /tmp/senha/$username
-	echo "$username $sshlimiter" >> /root/usuarios.db
+if (useradd -e $final -M -s /bin/false -p $pass $username);then
+	# echo "$password" > /tmp/senha/$username
+	echo "$username $sshlimiter" >> /usuarios.db
 	echo "$username - Ok"
+	exit 0
 else
 	echo "$username - Fail"
+	exit 1
 fi
-
-exit

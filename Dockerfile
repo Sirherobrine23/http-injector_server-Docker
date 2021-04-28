@@ -40,7 +40,7 @@ RUN echo "PATH=${PATH}:/scripts" >> /etc/PATH && \
 echo "export PATH=${PATH}:/scripts" >> /etc/zsh/zshenv && \
 usermod --shell /usr/bin/zsh root
 
-ENV ADMIN_USERNAME="ubuntu" ADMIN_PASSWORD="123456789" IS_DOCKER="true"
+ENV ADMIN_USERNAME="ubuntu" ADMIN_PASSWORD="123456789" IS_DOCKER="true" CONFIG_FILE="/home/configs/settings.json"
 
 # Root COPY
 COPY root_docker/ /
