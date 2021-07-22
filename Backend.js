@@ -199,12 +199,22 @@ function LoadUsers(){
 }
 
 // Start badvpn
-async function startBadvpn(){
+async function startBadvpn(BadvpnPort = 7300){
     badvpn = "/bin/badvpn-udpgw"
     return new Promise(async (resolve_async, reject_async) => {
         try {
             if (fs.existsSync(badvpn)) {
-                child_process.execFileSync("screen", ["-dmS", "Badvpn", badvpn]);
+                child_process.execFileSync("screen", [
+                    "-dmS",
+                    "Badvpn",
+                    badvpn,
+                    "--listen-addr",
+                    `0.0.0.0:${BadvpnPort}`,
+                    "--max-clients",
+                    999999999999,
+                    "--max-connections-for-client",
+                    9999
+                ]);
                 setTimeout(() => {
                     const currentList = GetProcessList().filter(a => a.command.toLowerCase().includes("badvpn"))
                     if (currentList.length <= 0) reject_async("Badvpn is already running"); else resolve_async("Badvpn is running");
