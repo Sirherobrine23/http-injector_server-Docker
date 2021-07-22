@@ -29,7 +29,7 @@ global.SpeedtestResult = {
     }
 };
 setInterval(async () => global.SpeedtestResult = await Speedtest(), 1 * 30 * 60 * 60 * 1000);
-// (async () => global.SpeedtestResult = await Speedtest())()
+(async () => global.SpeedtestResult = await Speedtest())()
 app.get("/speedtest", async ({res}) => res.json(global.SpeedtestResult));
 
 app.all("*", ({res}) => res.sendStatus(404))

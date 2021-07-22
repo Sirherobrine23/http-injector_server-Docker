@@ -6,17 +6,6 @@ const { homedir } = require("os");
 const { UsersFile, UserDB } = require("./Paths");
 if (!(global.fetch)) global.fetch = require("node-fetch");
 
-// Restart Service Command
-async function restartService(service) {
-    return new Promise((resolve, reject) => {
-        try {
-            resolve(child_process.execSync(`services ${service} restart`).toString("utf8"));
-        } catch (err) {
-            reject(err);
-        }
-    })
-}
-
 function GetServices(){
     try {
         return child_process.execSync("service --status-all").toString("utf8").split("\n").filter(a=>a).map(Lines => Lines.split(/\s+/gi).filter(a=>!/^\[|^\]|^\+|^\-/.test(a)).filter(a=>a).join(""));
@@ -29,8 +18,8 @@ function GetServices(){
 async function Speedtest(){
     try {
         console.log("Starting the Internet Speed Test");
-        const SpeedTest = new UniversalSpeedTest({measureUpload: true, downloadUnit: SpeedUnits.MBps, timeout: 6 * 60 * 1000});
-        const Speedtest_Result = await SpeedTest.runTestBySpeedtest();
+        const SpeedTest = new UniversalSpeedTest({measureUpload: true, downloadUnit: SpeedUnits.Gbps, timeout: 6 * 60 * 1000});
+        const Speedtest_Result = await SpeedTest.runTestByNetmetr();
         console.log("Sucess in fetch speedtest result")
         const Ip_Result = (await (await fetch("https://ipinfo.io/json")).json())
         return {
@@ -81,25 +70,29 @@ function GetProcessList(){
     })
 }
 
+// Restart Service Command
+function restartService(service) {
+    return child_process.execSync(`services ${service} stop && services ${service} start`).toString("utf8")
+}
+
 // Restart Services
-async function restartServices(services) {
+function restartServices(services) {
     for (let service of services) {
-        await restartService(service);
+        restartService(service);
     }
 }
 
 // Users Status Array
 function GetUsersStatus(){
     try {
-        var UsersFile = path.resolve(homedir(), "users.db");
         var sshMonitor = child_process.execFileSync("bash", [path.resolve(__dirname, "./ShellScripts/sshmonitor.sh")], {
             env: {
                 ...process.env,
-                database: UsersFile,
+                database: UserDB,
             }
-        }).toString("utf8").split("\n").filter(a=>a.trim());
-        sshMonitor.map(Users => {
-            Users = Users.split(/\s+/gi);
+        }).toString("utf8")
+        console.log(sshMonitor);
+        sshMonitor = sshMonitor.split("\n").filter(a=>a.trim()).map(Users => Users.split(/\s+/gi)).map(Users => {
             let connections = Users[2].split("/").filter(a=>a).map(a=>a.trim());
             return {
                 user: Users[0],
@@ -174,7 +167,7 @@ function DeleteUser(user){
         // Checks
         // User
         if (typeof user !== "string") throw new Error("the user must be a string");
-        if (!Users[user]) throw new Error("User doesn't exists");
+        if (!(fs.readFileSync("/etc/passwd", "utf8").includes(user) || Users[user])) throw new Error("User doesn't exists");
 
         // Delete
         child_process.execSync(`userdel -r -f ${user}`);
@@ -249,6 +242,7 @@ async function stopBadvpn(){
 
 module.exports = {
     restartServices,
+    restartService,
     GetServices,
     Speedtest,
     GetUsersStatus,

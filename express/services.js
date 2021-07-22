@@ -23,8 +23,10 @@ app.all("/", ({res}) => res.send("index"))
 app.post("/restart", async (req, res) => {
     const Service = req.body.Service || "all";
     try {
-        if (Service.toLocaleLowerCase() === "all") await restartServices()
-        else if (/ssh[dD]/.test(Service.toLocaleLowerCase())) await restartServices("sshd");
+        if (Service.toLocaleLowerCase() === "all") await restartService()
+        else if (/ssh[dD]/.test(Service.toLocaleLowerCase())) await restartService("sshd");
+        else if (/squid/.test(Service.toLocaleLowerCase())) await restartService("squid");
+        else if (/dropbear/.test(Service.toLocaleLowerCase())) await restartService("dropbear");
 
         return res.json({
             Service

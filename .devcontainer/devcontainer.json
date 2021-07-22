@@ -1,0 +1,32 @@
+{
+	"name": "Dev with Ubuntu",
+	"build": {
+		"dockerfile": "Dockerfile"
+	},
+	"forwardPorts": [
+		8080
+	],
+	"settings": {},
+	"extensions": [
+		"ms-vscode-remote.remote-containers",
+		"irongeek.vscode-env",
+		"coenraads.bracket-pair-colorizer",
+		"vscode-icons-team.vscode-icons",
+		"hookyqr.beautify",
+		"ms-azuretools.vscode-docker",
+		"github.copilot",
+		"benshabatnoam.google-translate-ext",
+		"christian-kohler.path-intellisense",
+		"visualstudioexptteam.vscodeintellicode",
+		"esbenp.prettier-vscode",
+		"leizongmin.node-module-intellisense",
+		"dbaeumer.vscode-eslint",
+		"eg2.vscode-npm-script",
+		"fknop.vscode-npm",
+		"christian-kohler.npm-intellisense",
+		"fabiospampinato.vscode-open-in-npm",
+		"jasonnutter.search-node-modules",
+		"redhat.vscode-yaml"
+	],
+	"remoteUser": "vscode"
+}
