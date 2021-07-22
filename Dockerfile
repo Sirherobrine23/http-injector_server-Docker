@@ -33,6 +33,9 @@ apt install -y tzdata openssl ca-certificates && \
 pip3 install -U git+https://github.com/shadowsocks/shadowsocks.git@master && \
 pip3 install git+https://github.com/sivel/speedtest-cli.git
 
+# Install chromium
+RUN apt install -y chromium-browser || apt install -y chromium
+
 # Change bash to zsh
 RUN usermod --shell /usr/bin/zsh root
 ENV ADMIN_USERNAME="ubuntu" ADMIN_PASSWORD="123456789" IS_DOCKER="true" CONFIG_FILE="/home/configs/settings.json"
