@@ -1,5 +1,4 @@
-.env
+*.env
 !example.env
-nodejs/node_modules/
+node_modules/
 DockerBuildRun.log
-HttpInjectorConfig.json

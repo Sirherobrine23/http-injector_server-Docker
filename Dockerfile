@@ -28,27 +28,19 @@ apt install -y squid dropbear openssh-server wget curl git unzip zip zsh iptable
 rm -fv /etc/ssh/sshd_config /etc/default/dropbear /etc/squid*/squid.conf && \
 \
 # Install nodeJS
-curl -fsSL https://deb.nodesource.com/setup_current.x | bash - && apt install -y nodejs && \
+curl -fsSL https://deb.nodesource.com/setup_lts.x | bash - && apt install -y nodejs && \
 apt install -y tzdata openssl ca-certificates && \
 pip3 install -U git+https://github.com/shadowsocks/shadowsocks.git@master && \
 pip3 install git+https://github.com/sivel/speedtest-cli.git
 
-# Create Config Dir
-RUN mkdir -p /home/configs/ && chmod 7777 -R /home/configs
-
-RUN echo "PATH=${PATH}:/scripts" >> /etc/PATH && \
-echo "export PATH=${PATH}:/scripts" >> /etc/zsh/zshenv && \
-usermod --shell /usr/bin/zsh root
-
+# Change bash to zsh
+RUN usermod --shell /usr/bin/zsh root
 ENV ADMIN_USERNAME="ubuntu" ADMIN_PASSWORD="123456789" IS_DOCKER="true" CONFIG_FILE="/home/configs/settings.json"
 
-# Root COPY
-COPY root_docker/ /
+# Copy and Install Dependecies
+WORKDIR /usr/src/Backend
+COPY ./ ./
+RUN npm install -d --no-save
 
-# Start Scripts
-RUN chmod 7777 -R /scripts
-
-# Entrypoint
-RUN chmod a+x /nodejs/entrypoint.js
-WORKDIR /nodejs/
-ENTRYPOINT [ "/nodejs/entrypoint.js" ]
+EXPOSE 8080
+ENTRYPOINT [ "node", "index.js"]
